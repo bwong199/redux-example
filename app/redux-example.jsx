@@ -10,7 +10,7 @@ var stateDefault = {
 
 var reducer = (state = stateDefault, action) => {
 
-	console.log('New action,', action);
+	// console.log('New action,', action);
 	switch (action.type){
 		case 'CHANGE_NAME': 
 			return  {
@@ -22,10 +22,21 @@ var reducer = (state = stateDefault, action) => {
 	}	
 };
 
-var store = redux.createStore(reducer);
+var store = redux.createStore(reducer, redux.compose(
+	window.devToolsExtension ? window.devToolsExtension() : f => f
+));
+
+// Subscribe to changes
+store.subscribe(() => {
+	var state = store.getState();
+
+	console.log('Name is', state.name);
+	document.getElementById('app').innerHTML = state.name;
+});
+// unsubscribe();
 
 var currentState = store.getState();
-console.log('currentState', currentState);
+// console.log('currentState', currentState);
 
 
 store.dispatch({
@@ -33,5 +44,12 @@ store.dispatch({
 	name: 'Andrew'
 });
 
-console.log('Name should be andrew', store.getState());
+
+
+store.dispatch({
+	type: 'CHANGE_NAME', 
+	name: 'Emily'
+});
+
+
 

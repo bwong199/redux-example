@@ -10,7 +10,6 @@ var stateDefault = {
 
 var reducer = (state = stateDefault, action) => {
 
-	console.log('New action,', action);
 	switch (action.type){
 		case 'CHANGE_SEARCH_TEXT': 
 			return  {
@@ -22,7 +21,18 @@ var reducer = (state = stateDefault, action) => {
 	}	
 };
 
-var store = redux.createStore(reducer);
+var store = redux.createStore(reducer, redux.compose(
+	window.devToolsExtension ? window.devToolsExtension() : f => f
+));
+
+// Subscribe to changes
+store.subscribe(() => {
+	var state = store.getState();
+
+	console.log('searchText is', state.searchText);
+
+	document.getElementById('app').innerHTML = state.searchText;
+});
 
 var currentState = store.getState();
 console.log('currentState', currentState);
@@ -33,5 +43,12 @@ store.dispatch({
 	searchText: 'work'
 });
 
-console.log('serachText should be "work"', store.getState());
+store.dispatch({
+	type: 'CHANGE_SEARCH_TEXT', 
+	searchText: 'play'
+});
 
+// store.dispatch({
+// 	type: 'CHANGE_SEARCH_TEXT', 
+// 	searchText: 'something else'
+// });
